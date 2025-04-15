@@ -10,14 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
+from datetime import timedelta
 
 from dotenv import load_dotenv
+
 load_dotenv()
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -30,7 +31,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,9 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # local apps
-    'book',
+    'apps.book',
     # third party apps
     'graphene_django',
+    # 'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -77,7 +79,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -91,7 +92,6 @@ DATABASES = {
         'PASSWORD': os.getenv("DB_PASS"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -111,7 +111,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -122,7 +121,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -157,9 +155,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #     },
 # }
 
+AUTHENTICATION_BACKENDS = [
+    "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
 DEFAULT_FILE_STORAGE = "config.settings.storages.default"  # Replace "config.settings" with your actual settings path
 STATICFILES_STORAGE = "config.settings.storages.staticfiles"
 
 GRAPHENE = {
-    'SCHEMA': 'book.schema.schema'
+    'SCHEMA': 'apps.book.graphql.schema',
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
+}
+GRAPHQL_JWT = {
+    "JWT_VERIFY_EXPIRATION": True,
+    "JWT_EXPIRATION_DELTA": timedelta(days=5),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=15),
+
 }
