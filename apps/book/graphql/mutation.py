@@ -13,7 +13,7 @@ class CreateBook(graphene.Mutation):
     class Arguments:
         title = graphene.String(required=True)
         summary = graphene.String(required=True)
-        cover = Upload(required=True)
+        cover = Upload(required=False)
         category = graphene.Int(required=True)
         genres = graphene.List(graphene.ID, required=True)
 
