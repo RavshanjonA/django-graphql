@@ -20,13 +20,12 @@ class CreateBook(graphene.Mutation):
     book = graphene.Field(BookType)
 
     @classmethod
-    def mutate(cls, info, title, summary, category, genres, cover):
+    def mutate(cls, root, info, title, summary, category, genres):
         category = BookCategory.objects.get(id=category)
         genres = BookGenre.objects.filter(id__in=genres)
         book = Book(
             title=title,
             summary=summary,
-            cover=cover,
             category=category
         )
         book.save()
